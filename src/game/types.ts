@@ -16,6 +16,8 @@ export interface Tile {
   kind: TileKind;
   litter: number;
   growth: number;
+  /** 1 = just mowed; fades so the cut stripe stays visible for a few seconds. */
+  fresh?: number;
 }
 
 export interface Def {
@@ -129,6 +131,8 @@ export interface Staff {
   pathI: number;
   busy: number;
   targetId?: string;
+  rot?: number;
+  mowing?: boolean;
 }
 
 export interface Particle {
@@ -224,6 +228,8 @@ export interface Park {
   loan: number;
   books: { admissions: number; shops: number; rides: number; wages: number; running: number; photos: number };
   lastBooks: { admissions: number; shops: number; rides: number; wages: number; running: number; photos: number } | null;
+  /** Bumps whenever a tile is mowed so the 3D view can paint the stripe immediately. */
+  grassGen: number;
 }
 
 export interface Camera {
