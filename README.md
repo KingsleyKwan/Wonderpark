@@ -17,7 +17,7 @@ Board — they charge 4% a month and they will remember.
 
 ## Version
 
-See `src/game/version.ts`. Current: **0.4.0**.
+See `src/game/version.ts`. Current: **0.4.1**.
 
 ## Develop
 
