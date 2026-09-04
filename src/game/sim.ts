@@ -906,6 +906,7 @@ function staffSpeed(s: Staff) {
 
 function updateStaff(park: Park, s: Staff, dt: number) {
   s.busy = Math.max(0, s.busy - dt);
+  if (s.busy <= 0) s.mowing = false;
   if (s.job === "mascot" || s.job === "entertainer") {
     const performing = s.job === "entertainer" && s.busy > 0;
     const r = performing ? 4.2 : 2.4;
@@ -960,6 +961,7 @@ function updateStaff(park: Park, s: Staff, dt: number) {
       if (grass) {
         if (Math.hypot(s.x - grass.x - 0.5, s.y - grass.y - 0.5) < 1.3) {
           mowAt(park, s.x, s.y, 1.8);
+          s.mowing = true;
           s.busy = 0.3;
         } else if (!s.path.length || arrived) {
           const path = astar(park.walk, park.w, park.h, s.x, s.y, grass.x, grass.y);
@@ -1076,6 +1078,7 @@ function updateStaff(park: Park, s: Staff, dt: number) {
       if (grass) {
         if (Math.hypot(s.x - grass.x - 0.5, s.y - grass.y - 0.5) < 1.2) {
           mowAt(park, s.x, s.y);
+          s.mowing = true;
           s.busy = 0.32;
         } else if (arrived || !s.path.length) {
           const path = astar(park.walk, park.w, park.h, s.x, s.y, grass.x, grass.y);
@@ -1379,6 +1382,19 @@ export function tick(park: Park, dt: number) {
   updateHelicopter(park, dt);
   updateParticles(park, dt);
   park.trauma = Math.max(0, park.trauma - dt * 1.4);
+  if (park.ticks % 40 === 0) {
+    let fade = false;
+    for (let y = 0; y < park.h; y++) {
+      for (let x = 0; x < park.w; x++) {
+        const t = park.tiles[y]![x]!;
+        if ((t.fresh ?? 0) > 0) {
+          t.fresh = Math.max(0, (t.fresh ?? 0) - 0.28);
+          fade = true;
+        }
+      }
+    }
+    if (fade) park.grassGen = (park.grassGen ?? 0) + 1;
+  }
   if (park.ticks % 8 === 0) {
     recomputeRating(park);
     checkObjectives(park);

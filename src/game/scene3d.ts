@@ -262,8 +262,9 @@ export class ParkView3D {
           h = 0.07;
         } else {
           const gr = t.growth ?? 0;
-          hex = gr > 0.7 ? 0x24522c : gr > 0.4 ? 0x3d6b38 : park.biome === "creek" ? 0x6a8a4e : 0x5c8a52;
-          h = 0.08 + gr * 0.14;
+          const cut = (t.fresh ?? 0) > 0.15;
+          hex = cut ? 0x9bb86a : gr > 0.7 ? 0x24522c : gr > 0.4 ? 0x3d6b38 : park.biome === "creek" ? 0x6a8a4e : 0x5c8a52;
+          h = 0.08 + (cut ? 0.02 : gr * 0.14);
         }
         this.dummy.position.set(x + 0.5, h, y + 0.5);
         this.dummy.scale.set(1, t.kind === "water" ? 0.5 : 1, 1);

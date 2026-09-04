@@ -80,6 +80,7 @@ export function mowAt(park: Park, x: number, y: number, r = 1.6) {
       const t = park.tiles[yy]![xx]!;
       if (t.kind === "grass" && (t.growth ?? 0) > 0.05) {
         t.growth = Math.max(0, (t.growth ?? 0) - 0.55);
+        t.fresh = 1;
         cut++;
       }
     }
