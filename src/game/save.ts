@@ -1,5 +1,5 @@
 import type { Park } from "./types";
-import { startingUnlocked } from "./catalog";
+import { SCENARIOS, startingUnlocked } from "./catalog";
 import { rebuildWalk } from "./park";
 import { EMPTY_BOOKS, ensureRct } from "./rct";
 
@@ -68,6 +68,15 @@ export function loadPark(): Park | null {
       g.hasBalloon = g.hasBalloon ?? false;
     }
     park.grassGen = park.grassGen ?? 0;
+    park.peakGuests = park.peakGuests ?? park.guests.length;
+    park.objectives = Array.isArray(park.objectives) ? park.objectives.filter(Boolean) : [];
+    const sc = SCENARIOS.find((s) => s && s.id === park.scenarioId);
+    if (sc) {
+      for (const o of park.objectives) {
+        const fresh = sc.objectives.find((x) => x && o && x.id === o.id);
+        if (fresh) o.text = fresh.text;
+      }
+    }
     park.awards = park.awards ?? [];
     park.loan = park.loan ?? 0;
     park.books = park.books ?? { ...EMPTY_BOOKS };

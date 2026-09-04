@@ -85,7 +85,7 @@ export function Hud() {
   return (
     <>
       <header
-        className={`pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 ${
+        className={`pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 ${
           mobile
             ? "px-3 pt-[max(0.65rem,env(safe-area-inset-top))]"
             : "p-3 sm:p-4"
@@ -290,37 +290,52 @@ export function Hud() {
 
       {(pauseMenu || lose) && (
         <div
-          className="absolute inset-0 z-40 flex items-end justify-center bg-ink/55 p-4 sm:items-center"
+          className="absolute inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/55 px-3 pb-3 pt-16 sm:p-4"
           style={{ pointerEvents: "auto", touchAction: "manipulation" }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="park-menu-title"
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <div className="mb-[max(0.5rem,env(safe-area-inset-bottom))] w-full max-w-sm rounded-[28px] border border-line bg-ink-2 p-6 text-paper sm:mb-0">
-            <h2 id="park-menu-title" className="font-display text-3xl">
+          <div className="my-auto w-full max-w-sm rounded-[28px] border border-line bg-ink-2 p-5 text-paper">
+            <h2 id="park-menu-title" className="font-display text-2xl sm:text-3xl">
               {lose ? "Park seized" : win ? "Objectives met" : "On break"}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-paper-2">
               {lose
                 ? "HQ has collected the keys. You may keep the lanyard."
                 : win
-                  ? "The annual report will use your better photographs. Resume to keep building — this is not a lock."
+                  ? "Resume to keep building — this is not a lock."
                   : "The guests continue to have needs, even paused."}
             </p>
-            {park && park.loan > 0 && (
+            {!win && park && park.loan > 0 && (
               <p className="mt-2 tabular text-xs text-paper-3">Board loan ${Math.floor(park.loan).toLocaleString()}</p>
             )}
-            {park?.lastBooks && (
+            {!win && park?.lastBooks && (
               <p className="mt-1 text-xs leading-relaxed text-paper-3">
                 Last month · tickets ${park.lastBooks.admissions.toFixed(0)} · rides ${park.lastBooks.rides.toFixed(0)} ·
                 stalls ${park.lastBooks.shops.toFixed(0)} · photos {park.lastBooks.photos}
               </p>
             )}
-            {park && park.awards.length > 0 && (
+            {!win && park && park.awards.length > 0 && (
               <p className="mt-1 text-xs text-paper-3">Plaques: {park.awards.slice(-2).join(" · ")}</p>
             )}
-            <div className="mt-6 flex flex-col gap-2">
+            {park && (
+              <ul className="mt-3 space-y-1">
+                {park.objectives.map((o) => (
+                  <li
+                    key={o.id}
+                    className={`flex gap-2 text-sm ${o.done ? "text-paper-3 line-through" : "text-paper-2"}`}
+                  >
+                    <span
+                      className={`mt-1.5 size-1.5 shrink-0 rounded-full ${o.done ? "bg-paper-3" : "bg-brick"}`}
+                    />
+                    {o.text}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="mt-5 flex flex-col gap-2">
               {!lose && (
                 <button
                   type="button"
@@ -344,7 +359,7 @@ export function Hud() {
               >
                 Save park
               </button>
-              {!lose && park && park.loan < 8000 && (
+              {!win && !lose && park && park.loan < 8000 && (
                 <button
                   type="button"
                   className="h-12 min-h-12 rounded-[14px] border border-line text-paper"
@@ -364,7 +379,7 @@ export function Hud() {
                   Borrow $2,000
                 </button>
               )}
-              {!lose && park && park.advertising <= 1.05 && (
+              {!win && !lose && park && park.advertising <= 1.05 && (
                 <button
                   type="button"
                   className="h-12 min-h-12 rounded-[14px] border border-line text-paper"
@@ -395,10 +410,12 @@ export function Hud() {
               >
                 Return to desk
               </button>
-              <div className="pt-2">
-                <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-muted">Field kit</p>
-                <LayoutSwitch compact />
-              </div>
+              {!win && (
+                <div className="pt-2">
+                  <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-muted">Field kit</p>
+                  <LayoutSwitch compact />
+                </div>
+              )}
             </div>
           </div>
         </div>

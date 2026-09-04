@@ -236,7 +236,7 @@ export const DEFS: Def[] = [
     roof: "#2a3342",
     height: 22,
     researchCost: 2200,
-    researchDays: 8,
+    researchDays: 4,
     excitement: 2.0,
     intensity: 2.0,
     nausea: 1.0,
@@ -743,7 +743,7 @@ export const SCENARIOS: Scenario[] = [
     objectives: [
       { id: "trees", text: "Keep at least 12 trees standing" },
       { id: "coaster", text: "Build and test a Track Works coaster" },
-      { id: "guests", text: "Host 70 guests at once" },
+      { id: "guests", text: "Host 55 guests at once" },
       { id: "profit", text: "Hold $8,000 cash" },
       { id: "rating", text: "Reach park rating 700" },
     ],

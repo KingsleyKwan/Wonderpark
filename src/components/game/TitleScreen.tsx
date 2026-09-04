@@ -77,6 +77,8 @@ export function TitleScreen() {
                 if (p) {
                   adoptPark(p);
                   set({ screen: "park", speed: 1, pauseMenu: false });
+                } else {
+                  setSaved(false);
                 }
               }}
               className="flex h-12 items-center justify-between rounded-[12px] border border-line bg-ink-2/80 px-5 text-left text-paper backdrop-blur-sm transition-transform duration-150 ease-out hover:border-line-strong active:scale-[0.98]"

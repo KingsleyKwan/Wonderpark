@@ -224,6 +224,8 @@ export interface Park {
   ticks: number;
   nextId: number;
   grassGen: number;
+  /** Highest simultaneous guest count this park has held. */
+  peakGuests?: number;
   weather: Weather;
   weatherT: number;
   awards: string[];

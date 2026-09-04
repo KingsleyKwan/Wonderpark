@@ -1213,10 +1213,10 @@ function recomputeRating(park: Park) {
     Math.min(60, toilets * 28) +
     Math.min(40, food * 14) +
     Math.min(50, park.guests.length * 0.7) -
-    litter * 8 -
+    Math.min(70, litter * 5) -
     park.deaths * 55 -
     park.injuries * 8 -
-    grass * 90 -
+    Math.min(55, grass * 90) -
     wilt * 14 -
     smashed * 18 +
     Math.min(40, park.awards.length * 8);
@@ -1240,14 +1240,17 @@ function checkObjectives(park: Park) {
     if (d.kind === "coaster" && b.tested && (b.track?.length ?? 0) > 6) coasterOk = true;
     if (d.kind === "tree" || d.kind === "pine") trees++;
   }
+  park.peakGuests = Math.max(park.peakGuests ?? 0, park.guests.length);
+  const guestNeed = park.scenarioId === "fernwood" ? 55 : 40;
+  const ratingNeed = park.scenarioId === "fernwood" ? 700 : 600;
   for (const o of park.objectives) {
     if (o.done) continue;
     if (o.id === "path" && hasPath) o.done = true;
     if (o.id === "toilet" && toilets > 0) o.done = true;
     if (o.id === "food" && food > 0) o.done = true;
     if (o.id === "ride" && openRide) o.done = true;
-    if (o.id === "guests" && park.guests.length >= (park.scenarioId === "fernwood" ? 70 : 40)) o.done = true;
-    if (o.id === "rating" && park.rating >= (park.scenarioId === "fernwood" ? 700 : 600)) o.done = true;
+    if (o.id === "guests" && park.peakGuests >= guestNeed) o.done = true;
+    if (o.id === "rating" && park.rating >= ratingNeed) o.done = true;
     if (o.id === "trees" && trees >= 12) o.done = true;
     if (o.id === "coaster" && coasterOk) o.done = true;
     if (o.id === "profit" && park.cash >= 8000) o.done = true;
@@ -1371,8 +1374,8 @@ export function tick(park: Park, dt: number) {
     }
   }
   const spawnRate =
-    (0.28 + (park.rating / 1000) * 0.7) * park.advertising * (park.lost ? 0 : 1) * weatherMul +
-    (openRides(park).length > 0 ? 0.12 : 0);
+    (0.32 + (park.rating / 1000) * 0.7) * park.advertising * (park.lost ? 0 : 1) * weatherMul +
+    (openRides(park).length > 0 ? 0.18 : 0);
   park.spawnAcc += dt * spawnRate;
   while (park.spawnAcc >= 1) {
     park.spawnAcc -= 1;

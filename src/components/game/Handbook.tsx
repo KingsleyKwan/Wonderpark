@@ -18,7 +18,11 @@ const SECTIONS = [
   },
   {
     t: "Research",
-    b: "The lab unlocks extra rides one blueprint at a time. Each listed day is a park day. When the memo lands, the new ride appears under Rides. Research stays with that park — a new assignment starts from the starter blueprints only.",
+    b: "The lab unlocks extra rides one blueprint at a time. Each listed day is a park day. When the memo lands, the new ride appears under Rides. A new assignment starts from the starter blueprints — research does not carry over.",
+  },
+  {
+    t: "The posting",
+    b: "Pause to read HQ’s list. Tick them off in any order. Fernwood wants a tested Track Works coaster — that blueprint lives in Research until the lab clears it.",
   },
   {
     t: "Staff",

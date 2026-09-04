@@ -1,6 +1,6 @@
 # Wonderpark — shared project bible
 
-**Version:** 0.4.2 (2026-09-04)  
+**Version:** 0.4.3 (2026-09-04)  
 **GitHub (canonical, every chat edits here):** https://github.com/KingsleyKwan/Wonderpark  
 **Live source in this sandbox:** `/workspace/src/game/`  
 **Stack:** TanStack Start + React 19 + three.js isometric. Auth/db OFF. Preview `:8080`.
@@ -97,6 +97,7 @@ Shipped
 12. [x] Handbills $350 from the pause menu
 16. [x] Balloon held after Balloon Box
 17. [x] Research is per park; new assignment does not inherit lab unlocks
+18. [x] Pause menu lists the posting so you can finish each assignment
 
 Next (pick from the top)
 
@@ -113,6 +114,7 @@ Next (pick from the top)
 - 2026-09-04 10:44 HKT — this chat ingested all RCT findings into live Wonderpark **0.4.0**, wrote this bible, published https://github.com/KingsleyKwan/Wonderpark so every project chat can edit and publish.
 - 2026-09-04 12:00 HKT — **0.4.1** remaining RCT titles: Jester entertainers, indoor rain + 3D umbrellas, live grass mow stripe, Ridewright inspect, handbills, balloons. BBQ/flights automations still out of scope.
 - 2026-09-04 12:30 HKT — **0.4.2** research leak: lab unlocks were surviving into a new assignment via the single save slot. New posting now replaces the save, starter blueprints only. Not a feature.
+- 2026-09-04 17:40 HKT — **0.4.3** pause menu lists HQ’s posting. Both assignments are completable: Hollow Creek (repair the mothballed rides, toilet, food, 40 guests, rating 600) and Fernwood (trees, researched Track Works, 55 guests, $8k, rating 700). Guest peak latches. Litter/grass can no longer floor the rating.
 
 ---
 
