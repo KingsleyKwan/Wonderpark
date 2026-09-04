@@ -28,6 +28,8 @@ export class ParkView3D {
   guestHead: THREE.InstancedMesh | null = null;
   staffMesh: THREE.InstancedMesh | null = null;
   staffHead: THREE.InstancedMesh | null = null;
+  umbrellaMesh: THREE.InstancedMesh | null = null;
+  balloonMesh: THREE.InstancedMesh | null = null;
   buildings = new Map<string, THREE.Group>();
   trackGroup = new THREE.Group();
   ghostPad = new THREE.Mesh(new THREE.BoxGeometry(1, 0.08, 1), mat("#3d8b6e", { transparent: true, opacity: 0.35 }));
@@ -106,6 +108,10 @@ export class ParkView3D {
     this.guestHead = this.makeCrowd(makeHeadGeo(), 160);
     this.staffMesh = this.makeCrowd(makePersonGeo(), 40);
     this.staffHead = this.makeCrowd(makeHeadGeo(), 40);
+    const umbGeo = new THREE.ConeGeometry(0.22, 0.16, 8);
+    umbGeo.rotateX(Math.PI);
+    this.umbrellaMesh = this.makeCrowd(umbGeo, 160);
+    this.balloonMesh = this.makeCrowd(new THREE.SphereGeometry(0.09, 8, 6), 160);
   }
 
   private makeCrowd(geo: THREE.BufferGeometry, n: number) {
@@ -190,7 +196,7 @@ export class ParkView3D {
     this.sun.intensity = rain ? 0.52 : overcast ? 0.88 : 1.45;
     this.renderer.toneMappingExposure = rain ? 0.92 : 1.12;
 
-    const visKey = `${park.weather}|${park.day}|${Math.floor(park.dayT / 6)}`;
+    const visKey = `${park.weather}|${park.day}|${park.grassGen ?? 0}|${Math.floor(park.dayT / 6)}`;
     if (park.pathGen !== this.lastPathGen || visKey !== this.lastVisKey) {
       this.rebuildTiles(park);
       this.lastPathGen = park.pathGen;
@@ -386,6 +392,8 @@ export class ParkView3D {
 
   private updateGuests(park: Park, time: number) {
     const items = [];
+    const umbs: { x: number; y: number; z?: number; rot?: number; scale?: number; color: string; tilt?: number }[] = [];
+    const balloons: { x: number; y: number; z?: number; rot?: number; scale?: number; color: string; tilt?: number }[] = [];
     for (const g of park.guests) {
       if (g.state === "ride") continue;
       items.push({
@@ -397,8 +405,38 @@ export class ParkView3D {
         color: g.shirt,
         tilt: g.state === "flying" ? time * 0.01 : 0,
       });
+      if (g.umbrella && park.weather === "rain") {
+        umbs.push({ x: g.x, y: g.y, z: (g.z ?? 0) + 6.2, rot: g.rot, color: g.shirt, scale: 1 });
+      }
+      if (g.hasBalloon && g.state !== "flying") {
+        balloons.push({ x: g.x + 0.16, y: g.y, z: (g.z ?? 0) + 8.5, color: g.shirt, scale: 1 });
+      }
     }
     this.stampCrowd(this.guestMesh!, this.guestHead!, items);
+    this.stampProp(this.umbrellaMesh!, umbs, 0);
+    this.stampProp(this.balloonMesh!, balloons, 0);
+  }
+
+  private stampProp(
+    mesh: THREE.InstancedMesh,
+    items: { x: number; y: number; z?: number; rot?: number; scale?: number; color: string }[],
+    yOff: number,
+  ) {
+    const cap = mesh.instanceMatrix.count;
+    const n = Math.min(items.length, cap);
+    for (let i = 0; i < n; i++) {
+      const g = items[i]!;
+      this.dummy.position.set(g.x, 0.28 + (g.z ?? 0) * 0.12 + yOff, g.y);
+      this.dummy.rotation.set(0, -(g.rot ?? 0) + Math.PI / 2, 0);
+      this.dummy.scale.setScalar(g.scale ?? 1);
+      this.dummy.updateMatrix();
+      mesh.setMatrixAt(i, this.dummy.matrix);
+      this.tmpColor.set(g.color);
+      mesh.setColorAt(i, this.tmpColor);
+    }
+    mesh.count = n;
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   }
 
   private updateStaff(park: Park) {
@@ -409,12 +447,13 @@ export class ParkView3D {
       medic: "#e8dcc4",
       gardener: "#3d8b6e",
       security: "#2a3342",
+      entertainer: "#e8c84a",
     };
     const items = park.staff.map((s) => ({
       x: s.x,
       y: s.y,
       color: colors[s.job] ?? "#c9923a",
-      scale: 1.08,
+      scale: s.job === "entertainer" || s.job === "mascot" ? 1.16 : 1.08,
     }));
     this.stampCrowd(this.staffMesh!, this.staffHead!, items);
   }

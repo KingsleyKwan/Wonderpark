@@ -108,6 +108,7 @@ function spawnGuest(park: Park) {
     hasMap: rand(park) < 0.22,
     vandal: rand(park) < 0.07,
     umbrella: false,
+    hasBalloon: false,
   };
   think(g, guestTaste(g), park);
   park.guests.push(g);
@@ -209,7 +210,7 @@ function pickRide(park: Park, g: Guest): Building | null {
     const dist = Math.hypot(b.serviceX - g.x, b.serviceY - g.y) * (g.hasMap ? 0.45 : 1.15);
     const wait = b.queue.length;
     const valueGap = b.price - (d.excitement ?? 3) * 1.4;
-    const score =
+    let score =
       (d.excitement ?? 3) * 10 -
       dist * 0.65 -
       wait * 2.1 -
@@ -218,6 +219,10 @@ function pickRide(park: Park, g: Guest): Building | null {
       Math.abs(speedGap) * 16 -
       Math.max(0, valueGap) * 4 +
       rand(park) * 2.5;
+    if (park.weather === "rain" && !g.umbrella) {
+      if (d.kind === "haunt") score += 14;
+      if (d.kind === "flume" || d.kind === "drop" || d.kind === "ship") score -= 7;
+    }
     if (score > bestS) {
       bestS = score;
       best = b;
@@ -581,6 +586,7 @@ function serveShop(park: Park, b: Building, g: Guest) {
     g.happiness += 0.1;
   } else if (d.product === "balloon" || d.product === "souvenir") {
     g.happiness += 0.14;
+    if (d.product === "balloon") g.hasBalloon = true;
   } else if (d.product === "info") {
     g.hasMap = true;
     g.happiness += 0.1;
@@ -650,7 +656,7 @@ function chooseGoal(park: Park, g: Guest) {
     think(g, "thirsty", park);
   }
   if (park.weather === "rain" && !g.umbrella) {
-    const t = shopsOf(park, "umbrella");
+    const t = shopsOf(park, "umbrella").filter((s) => g.cash >= s.price);
     if (t.length) {
       const s = t[0]!;
       g.targetId = s.id;
@@ -661,6 +667,19 @@ function chooseGoal(park: Park, g: Guest) {
     }
     think(g, "rain", park);
     g.happiness -= 0.02;
+    const cover = park.buildings.filter((b) => {
+      const d = DEF_MAP[b.defId];
+      return d && b.open && !b.broken && (d.category === "shop" || d.kind === "haunt" || d.product === "toilet" || d.product === "aid");
+    });
+    if (cover.length) {
+      const s = cover.reduce((a, b) =>
+        Math.hypot(a.serviceX - g.x, a.serviceY - g.y) < Math.hypot(b.serviceX - g.x, b.serviceY - g.y) ? a : b,
+      );
+      g.targetId = s.id;
+      g.state = "wander";
+      setPath(park, g, s.serviceX, s.serviceY);
+      return;
+    }
   }
   if (!g.hasMap) {
     const kiosk = mapShop(park);
@@ -882,11 +901,33 @@ function updateGuest(park: Park, g: Guest, dt: number) {
 }
 
 function staffSpeed(s: Staff) {
-  return s.job === "mascot" ? 1.1 : 1.55;
+  return s.job === "mascot" || s.job === "entertainer" ? 1.12 : 1.55;
 }
 
 function updateStaff(park: Park, s: Staff, dt: number) {
   s.busy = Math.max(0, s.busy - dt);
+  if (s.job === "mascot" || s.job === "entertainer") {
+    const performing = s.job === "entertainer" && s.busy > 0;
+    const r = performing ? 4.2 : 2.4;
+    const rate = performing ? 0.09 : 0.05;
+    for (const g of park.guests) {
+      if (Math.hypot(g.x - s.x, g.y - s.y) < r) g.happiness = Math.min(1, g.happiness + dt * rate);
+    }
+    if (performing && Math.random() < dt * 6) {
+      spawnParticle(park, {
+        x: s.x,
+        y: s.y,
+        z: 10,
+        vx: (Math.random() - 0.5) * 3,
+        vy: (Math.random() - 0.5) * 3,
+        vz: 6,
+        life: 0.6,
+        color: Math.random() > 0.5 ? "#e8c84a" : "#c24a3a",
+        size: 3,
+        kind: "spark",
+      });
+    }
+  }
   if (s.busy > 0) return;
 
   const arrived = s.path.length ? followStaff(s, dt, staffSpeed(s)) : true;
@@ -929,28 +970,66 @@ function updateStaff(park: Park, s: Staff, dt: number) {
     }
   } else if (s.job === "mechanic") {
     const broken = park.buildings.find((b) => b.broken);
-    if (broken) {
-      const d = DEF_MAP[broken.defId]!;
-      const tx = broken.x + d.w / 2;
-      const ty = broken.y + d.h / 2;
+    const weary =
+      !broken &&
+      park.buildings
+        .filter((b) => DEF_MAP[b.defId]?.category === "ride" && !b.broken && b.reliability < 0.62)
+        .sort((a, b) => a.reliability - b.reliability)[0];
+    const target = broken ?? weary;
+    if (target) {
+      const d = DEF_MAP[target.defId]!;
+      const tx = target.x + d.w / 2;
+      const ty = target.y + d.h / 2;
       if (Math.hypot(s.x - tx, s.y - ty) < 1.4) {
-        broken.reliability = Math.min(1, broken.reliability + dt * 0.25);
-        if (broken.reliability > 0.72) {
-          broken.broken = false;
-          broken.open = true;
+        target.reliability = Math.min(1, target.reliability + dt * (broken ? 0.25 : 0.14));
+        if (broken && target.reliability > 0.72) {
+          target.broken = false;
+          target.open = true;
           s.busy = 0.6;
-        }
+        } else if (!broken) s.busy = 0.45;
       } else if (arrived || !s.path.length) {
-        const path = astar(park.walk, park.w, park.h, s.x, s.y, broken.serviceX, broken.serviceY);
+        const path = astar(park.walk, park.w, park.h, s.x, s.y, target.serviceX, target.serviceY);
         s.path = path ?? [];
         s.pathI = 0;
       }
     }
   } else if (s.job === "mascot") {
-    for (const g of park.guests) {
-      if (Math.hypot(g.x - s.x, g.y - s.y) < 2.4) g.happiness = Math.min(1, g.happiness + dt * 0.05);
-    }
     if (arrived || !s.path.length) {
+      const path = astar(
+        park.walk,
+        park.w,
+        park.h,
+        s.x,
+        s.y,
+        4 + Math.random() * (park.w - 8),
+        4 + Math.random() * (park.h - 8),
+      );
+      s.path = path ?? [];
+      s.pathI = 0;
+    }
+  } else if (s.job === "entertainer") {
+    let cluster: { x: number; y: number } | null = null;
+    let bestN = 1;
+    for (const g of park.guests) {
+      if (g.state === "flying" || g.state === "leave") continue;
+      let n = 0;
+      for (const o of park.guests) {
+        if (Math.hypot(o.x - g.x, o.y - g.y) < 3.2) n++;
+      }
+      if (n > bestN) {
+        bestN = n;
+        cluster = g;
+      }
+    }
+    if (cluster) {
+      if (Math.hypot(s.x - cluster.x, s.y - cluster.y) < 1.7) {
+        s.busy = 3.4;
+      } else if (arrived || !s.path.length) {
+        const path = astar(park.walk, park.w, park.h, s.x, s.y, cluster.x, cluster.y);
+        s.path = path ?? [];
+        s.pathI = 0;
+      }
+    } else if (arrived || !s.path.length) {
       const path = astar(
         park.walk,
         park.w,
@@ -1278,6 +1357,13 @@ export function tick(park: Park, dt: number) {
   }
 
   const weatherMul = park.weather === "rain" ? 0.55 : park.weather === "overcast" ? 0.82 : 1;
+  if (park.adT > 0) {
+    park.adT -= dt;
+    if (park.adT <= 0) {
+      park.adT = 0;
+      park.advertising = 1;
+    }
+  }
   const spawnRate =
     (0.28 + (park.rating / 1000) * 0.7) * park.advertising * (park.lost ? 0 : 1) * weatherMul +
     (openRides(park).length > 0 ? 0.12 : 0);

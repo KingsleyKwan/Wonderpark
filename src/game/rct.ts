@@ -21,7 +21,11 @@ export function ensureRct(park: Park) {
     g.hasMap = g.hasMap ?? false;
     g.vandal = g.vandal ?? false;
     g.umbrella = g.umbrella ?? false;
+    g.hasBalloon = g.hasBalloon ?? false;
   }
+  park.grassGen = park.grassGen ?? 0;
+  park.advertising = park.advertising ?? 1;
+  park.adT = park.adT ?? 0;
   for (const row of park.tiles) {
     for (const t of row) t.growth = t.growth ?? 0;
   }
@@ -69,12 +73,32 @@ export function growGrass(park: Park, days: number) {
 }
 
 export function mowAt(park: Park, x: number, y: number, r = 1.6) {
+  let cut = 0;
   for (let yy = Math.floor(y - r); yy <= Math.ceil(y + r); yy++) {
     for (let xx = Math.floor(x - r); xx <= Math.ceil(x + r); xx++) {
       if (yy < 0 || xx < 0 || yy >= park.h || xx >= park.w) continue;
       const t = park.tiles[yy]![xx]!;
-      if (t.kind === "grass") t.growth = Math.max(0, (t.growth ?? 0) - 0.55);
+      if (t.kind === "grass" && (t.growth ?? 0) > 0.05) {
+        t.growth = Math.max(0, (t.growth ?? 0) - 0.55);
+        cut++;
+      }
     }
+  }
+  if (cut) {
+    park.grassGen = (park.grassGen ?? 0) + 1;
+    park.particles.push({
+      x,
+      y,
+      z: 6,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      vz: 4,
+      life: 0.7,
+      max: 0.7,
+      color: "#5c7f62",
+      size: 3,
+      kind: "leaf",
+    });
   }
 }
 
@@ -145,6 +169,21 @@ export function takeLoan(park: Park, amount = 2000) {
     title: "A friendly advance",
     body: `The Board has wired $${add}. Interest is 4% a month and they will remember. Do not make them remember twice.`,
     tone: "warn",
+  });
+  return true;
+}
+
+export function runAds(park: Park, spend = 350) {
+  if (park.cash < spend) return false;
+  park.cash -= spend;
+  park.advertising = Math.min(2.2, Math.max(1, park.advertising) + 0.5);
+  park.adT = 32;
+  park.memos.push({
+    id: uid(park),
+    from: "Marketing",
+    title: "Handbills, everywhere",
+    body: `$${spend} of paper has left the building. The gate should thicken until the glue dries. After that, guests remember they have a choice.`,
+    tone: "info",
   });
   return true;
 }

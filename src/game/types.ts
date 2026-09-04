@@ -9,7 +9,7 @@ export type GuestState =
   | "leave"
   | "flying"
   | "injured";
-export type StaffJob = "janitor" | "mechanic" | "mascot" | "medic" | "gardener" | "security";
+export type StaffJob = "janitor" | "mechanic" | "mascot" | "medic" | "gardener" | "security" | "entertainer";
 export type Weather = "sun" | "overcast" | "rain";
 
 export interface Tile {
@@ -120,6 +120,7 @@ export interface Guest {
   hasMap: boolean;
   vandal: boolean;
   umbrella: boolean;
+  hasBalloon: boolean;
 }
 
 export interface Staff {
@@ -222,6 +223,7 @@ export interface Park {
   lost: boolean;
   ticks: number;
   nextId: number;
+  grassGen: number;
   weather: Weather;
   weatherT: number;
   awards: string[];

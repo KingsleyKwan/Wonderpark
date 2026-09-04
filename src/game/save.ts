@@ -64,7 +64,9 @@ export function loadPark(): Park | null {
       g.hasMap = g.hasMap ?? false;
       g.vandal = g.vandal ?? false;
       g.umbrella = g.umbrella ?? false;
+      g.hasBalloon = g.hasBalloon ?? false;
     }
+    park.grassGen = park.grassGen ?? 0;
     park.awards = park.awards ?? [];
     park.loan = park.loan ?? 0;
     park.books = park.books ?? { ...EMPTY_BOOKS };

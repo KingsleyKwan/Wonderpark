@@ -16,6 +16,7 @@ const JOB_LABEL: Record<string, string> = {
   medic: "Park Medic",
   gardener: "Flower Hand",
   security: "Park Watch",
+  entertainer: "Jester",
 };
 
 const JOB_BLURB: Record<string, string> = {
@@ -25,6 +26,7 @@ const JOB_BLURB: Record<string, string> = {
   medic: "For when the helicopter is busy.",
   gardener: "Waters beds. Mows when the lawn starts a novel.",
   security: "For guests who treat benches as sport.",
+  entertainer: "Stops in a crowd and performs until the jokes run out.",
 };
 
 export function Inspector() {
@@ -51,6 +53,7 @@ export function Inspector() {
         <p className="pt-1 text-xs text-paper-3">
           {g.hasMap ? "Carries a map." : "Inventing geography."}
           {g.umbrella ? " Brolly up." : ""}
+          {g.hasBalloon ? " Balloon." : ""}
           {g.vandal ? " Security interest." : ""}
         </p>
         <Need label="Happiness" v={g.happiness} />

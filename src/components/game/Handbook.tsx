@@ -22,11 +22,11 @@ const SECTIONS = [
   },
   {
     t: "Staff",
-    b: "Groundskeepers eat litter and long grass. Flower Hands water beds. Park Watch stops guests who treat benches as sport. Ridewrights eat breakdowns. Captain Wonder eats the will to complain.",
+    b: "Groundskeepers eat litter and long grass — you will see the stripe. Flower Hands water beds. Park Watch stops vandals. Ridewrights inspect before a ride dies. Jesters stop in a crowd and perform. Captain Wonder eats the will to complain.",
   },
   {
     t: "Weather & money",
-    b: "Rain thins the gate and soaks anyone without a brolly. Map kiosks stop guests inventing geography. Flash Hut sells the photograph after a matching ride. The pause menu will lend you $2,000. Interest is 4% a month and the Board will remember.",
+    b: "Rain thins the gate. Guests without a brolly buy one, then hide in stalls and the haunted house. Umbrellas show up in 3D. Map kiosks stop guests inventing geography. Flash Hut sells the photograph. Pause menu: borrow $2,000, or spend $350 on handbills to thicken the gate.",
   },
   {
     t: "Awards",

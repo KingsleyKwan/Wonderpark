@@ -1,6 +1,6 @@
 # Wonderpark — shared project bible
 
-**Version:** 0.4.0 (2026-09-04)  
+**Version:** 0.4.1 (2026-09-04)  
 **GitHub (canonical, every chat edits here):** https://github.com/KingsleyKwan/Wonderpark  
 **Live source in this sandbox:** `/workspace/src/game/`  
 **Stack:** TanStack Start + React 19 + three.js isometric. Auth/db OFF. Preview `:8080`.
@@ -56,7 +56,7 @@ The Grok automation **Keep improve the RCT** (`8d97a951-9185-4a06-92a4-07981e231
 shipped these in *other* sandboxes. They never landed here until 0.4.0.
 Later runs died with `USAGE_POOL_EXHAUSTED`. Schedule is **paused**.
 
-Shipped into this tree in **0.4.0**:
+Shipped into this tree in **0.4.0–0.4.1**:
 
 | Automation title | What it became |
 |---|---|
@@ -68,8 +68,9 @@ Shipped into this tree in **0.4.0**:
 | RCT: Vandalism & goals | ~7% of guests `vandal`. Smash benches/bins/flowers unless Park Watch is near. |
 | RCT Music, Value & Scenery Boosts | Bandstand nearby happiness. Ride pick penalises bad value (price vs excitement). Smashed scenery drops score. |
 | RCT queues, umbrellas & loans | Queues already snake on **path** (0.3.3). Brolly Cart in rain. Pause-menu loan. |
-| RCT Research & New Rides | Already in 0.3.x. |
-| RCT game: security & bins | Bins already in catalog. Park Watch + smash targets bins. |
+| RCT2: Entertainers & Rain Added | **0.4.1** Jester staff performs in crowds. Rain: guests seek indoor stalls/haunt; umbrellas are 3D cones. |
+| RCT game updated with paths | Already in 0.3.x / 0.3.3 queues-on-path. |
+| RollerCoaster Tycoon Features Added / RCT Features Added! | Core loop already present. **0.4.1** handbills (advertising) + Ridewright inspects before breakdown. |
 
 Out of scope (do not ingest):
 
@@ -90,17 +91,17 @@ Shipped
 6. [x] Queues stand on path, never on the ride
 7. [x] Ingest hourly RCT automations (0.4.0)
 8. [x] Shared GitHub repo + this bible
+9. [x] Visible grass stripe on mow (`grassGen` rebuilds tiles)
+10. [x] 3D umbrellas in rain
+11. [x] Ridewright inspects before a ride dies
+12. [x] Handbills $350 from the pause menu
+16. [x] Balloon held after Balloon Box
 
 Next (pick from the top)
 
-9. [ ] Handymen mow a visible grass stripe the player can see from the isometric camera without waiting a day-tick rebuild
-10. [ ] Guest umbrellas as a 3D prop when raining
-11. [ ] Mechanic patrols *before* a ride hits 0.18 reliability
-12. [ ] Advertising campaign picker (currently a hidden multiplier)
 13. [ ] Coaster builder undo + on-track camera
 14. [ ] Park rating history sparkline in the pause books
 15. [ ] Save slot name + two parks
-16. [ ] Guest balloon held after souvenir stall
 
 ---
 
@@ -109,6 +110,7 @@ Next (pick from the top)
 - 2026-09-02 — automation ships in discarded sandboxes (grass, crowding, maps, weather, awards, vandalism, music, umbrellas, research, bins).
 - 2026-09-03 — RCT automation quota exhausted; schedule paused.
 - 2026-09-04 10:44 HKT — this chat ingested all RCT findings into live Wonderpark **0.4.0**, wrote this bible, published https://github.com/KingsleyKwan/Wonderpark so every project chat can edit and publish.
+- 2026-09-04 12:00 HKT — **0.4.1** remaining RCT titles: Jester entertainers, indoor rain + 3D umbrellas, live grass mow stripe, Ridewright inspect, handbills, balloons. BBQ/flights automations still out of scope.
 
 ---
 

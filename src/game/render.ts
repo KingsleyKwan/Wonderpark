@@ -451,8 +451,16 @@ function drawThought(ctx: CanvasRenderingContext2D, g: Guest, cam: Camera) {
 
 function drawStaff(ctx: CanvasRenderingContext2D, s: Staff, cam: Camera, time: number) {
   const color =
-    s.job === "mechanic" ? "#c9923a" : s.job === "janitor" ? "#5c7f62" : s.job === "medic" ? "#c24a3a" : "#c24a3a";
-  drawPerson(ctx, s.x, s.y, 0, 0, color, cam, s.job === "mascot" ? 2 : 1, time, false);
+    s.job === "mechanic"
+      ? "#c9923a"
+      : s.job === "janitor" || s.job === "gardener"
+        ? "#5c7f62"
+        : s.job === "security"
+          ? "#2a3342"
+          : s.job === "entertainer"
+            ? "#e8c84a"
+            : "#c24a3a";
+  drawPerson(ctx, s.x, s.y, 0, 0, color, cam, s.job === "mascot" || s.job === "entertainer" ? 2 : 1, time, false);
 }
 
 function drawHeli(ctx: CanvasRenderingContext2D, park: Park, cam: Camera, time: number) {

@@ -4,7 +4,7 @@ import { DEFS, DEF_MAP, PATH_COST } from "@/game/catalog";
 import { sfxClick, toggleMute, isMuted } from "@/game/audio";
 import { startResearch } from "@/game/sim";
 import { researchable } from "@/game/park";
-import { takeLoan } from "@/game/rct";
+import { takeLoan, runAds } from "@/game/rct";
 import { useGameStore, type Category } from "@/game/store";
 import { flushSave, getCamera, getPark } from "@/game/world";
 import {
@@ -30,6 +30,7 @@ import {
   VolumeX,
   Star,
   Menu,
+  Megaphone,
 } from "lucide-react";
 import { useState } from "react";
 import { LayoutSwitch } from "./LayoutSwitch";
@@ -101,6 +102,9 @@ export function Hud() {
               value={park.weather === "rain" ? "Rain" : park.weather === "overcast" ? "Grey" : "Sun"}
               compact={mobile}
             />
+          )}
+          {park && park.advertising > 1.05 && (
+            <Stat icon={Megaphone} label="Ads" value="On" compact={mobile} />
           )}
           {!mobile && <p className="hidden pl-2 text-xs text-paper-3 sm:block">{dayLabel}</p>}
           {win && !lose && (
@@ -358,6 +362,26 @@ export function Hud() {
                   }}
                 >
                   Borrow $2,000
+                </button>
+              )}
+              {!lose && park && park.advertising <= 1.05 && (
+                <button
+                  type="button"
+                  className="h-12 min-h-12 rounded-[14px] border border-line text-paper"
+                  onClick={() => {
+                    if (runAds(park, 350)) {
+                      sfxClick();
+                      set({
+                        cash: park.cash,
+                        memo: park.memos[0] ?? null,
+                        rev: Date.now(),
+                        pauseMenu: false,
+                        speed: 1,
+                      });
+                    }
+                  }}
+                >
+                  Handbills $350
                 </button>
               )}
               <button

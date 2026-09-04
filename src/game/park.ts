@@ -461,6 +461,7 @@ export function createPark(scenarioId: string): Park {
     lost: false,
     ticks: 0,
     nextId: 1,
+    grassGen: 0,
     weather: "sun",
     weatherT: 12,
     awards: [],
