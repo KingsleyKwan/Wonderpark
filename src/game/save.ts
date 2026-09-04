@@ -41,6 +41,7 @@ export function loadPark(): Park | null {
       for (const t of row) {
         t.litter = t.litter ?? 0;
         t.growth = t.growth ?? 0;
+        t.fresh = t.fresh ?? 0;
       }
     }
     for (const b of park.buildings) {
