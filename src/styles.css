@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #141820;
+  --color-ink-2: #1c2430;
+  --color-ink-3: #2a3342;
+  --color-paper: #f3ead7;
+  --color-paper-2: #e8dcc4;
+  --color-paper-3: #d9cbb0;
+  --color-muted: #8a8376;
+  --color-brick: #c24a3a;
+  --color-brick-2: #9e3a2e;
+  --color-sage: #5c7f62;
+  --color-sage-2: #3f5c45;
+  --color-money: #3d8b6e;
+  --color-warn: #c9923a;
+  --color-line: color-mix(in oklab, #f3ead7 16%, transparent);
+  --color-line-strong: color-mix(in oklab, #f3ead7 28%, transparent);
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-sans: "Outfit", "Segoe UI", system-ui, sans-serif;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  #app {
+    height: 100%;
+    margin: 0;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    font-family: var(--font-display);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.game-root {
+  min-height: 100%;
+  min-height: 100dvh;
+  background: var(--color-ink);
+}
+
+.layout-mobile {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
