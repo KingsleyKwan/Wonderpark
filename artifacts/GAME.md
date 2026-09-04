@@ -1,6 +1,6 @@
 # Wonderpark — shared project bible
 
-**Version:** 0.4.1 (2026-09-04)  
+**Version:** 0.4.2 (2026-09-04)  
 **GitHub (canonical, every chat edits here):** https://github.com/KingsleyKwan/Wonderpark  
 **Live source in this sandbox:** `/workspace/src/game/`  
 **Stack:** TanStack Start + React 19 + three.js isometric. Auth/db OFF. Preview `:8080`.
@@ -96,6 +96,7 @@ Shipped
 11. [x] Ridewright inspects before a ride dies
 12. [x] Handbills $350 from the pause menu
 16. [x] Balloon held after Balloon Box
+17. [x] Research is per park; new assignment does not inherit lab unlocks
 
 Next (pick from the top)
 
@@ -111,6 +112,7 @@ Next (pick from the top)
 - 2026-09-03 — RCT automation quota exhausted; schedule paused.
 - 2026-09-04 10:44 HKT — this chat ingested all RCT findings into live Wonderpark **0.4.0**, wrote this bible, published https://github.com/KingsleyKwan/Wonderpark so every project chat can edit and publish.
 - 2026-09-04 12:00 HKT — **0.4.1** remaining RCT titles: Jester entertainers, indoor rain + 3D umbrellas, live grass mow stripe, Ridewright inspect, handbills, balloons. BBQ/flights automations still out of scope.
+- 2026-09-04 12:30 HKT — **0.4.2** research leak: lab unlocks were surviving into a new assignment via the single save slot. New posting now replaces the save, starter blueprints only. Not a feature.
 
 ---
 
@@ -118,4 +120,5 @@ Next (pick from the top)
 
 Guests enter at the gate, walk **paths**, queue **on the path** at `serviceTile`,
 board a **round**, unload. Each guest has `intensityPref` + `speedPref`.
-Rides are not always-on. Research spends days. Auth/db stay off.
+Rides are not always-on. Research spends days and stays on **that** park.
+A new assignment starts from starter blueprints only. Auth/db stay off.

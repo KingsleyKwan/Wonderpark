@@ -18,7 +18,7 @@ const SECTIONS = [
   },
   {
     t: "Research",
-    b: "The lab unlocks extra rides one blueprint at a time. Each listed day is a park day. When the memo lands, the new ride appears under Rides.",
+    b: "The lab unlocks extra rides one blueprint at a time. Each listed day is a park day. When the memo lands, the new ride appears under Rides. Research stays with that park — a new assignment starts from the starter blueprints only.",
   },
   {
     t: "Staff",

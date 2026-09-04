@@ -64,6 +64,11 @@ export function TitleScreen() {
             <ArrowRight className="size-4" />
           </button>
           {saved && (
+            <p className="px-1 text-[11px] leading-relaxed text-paper-3">
+              A new posting replaces the saved park. Lab unlocks do not transfer.
+            </p>
+          )}
+          {saved && (
             <button
               type="button"
               onClick={() => {

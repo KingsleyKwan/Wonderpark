@@ -1,14 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import { SCENARIOS } from "@/game/catalog";
 import { pushMemo } from "@/game/sim";
 import { useGameStore } from "@/game/store";
 import { startScenario } from "@/game/world";
+import { hasSave } from "@/game/save";
 import { unlockAudio, sfxClick } from "@/game/audio";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export function ScenarioSelect() {
   const set = useGameStore((s) => s.set);
+  const [replaceId, setReplaceId] = useState<string | null>(null);
+
+  function accept(scId: string) {
+    unlockAudio();
+    sfxClick();
+    if (hasSave() && replaceId !== scId) {
+      setReplaceId(scId);
+      return;
+    }
+    const p = startScenario(scId);
+    pushMemo(p, scId === "fernwood" ? "welcome_fernwood" : "welcome_hollow");
+    set({
+      screen: "park",
+      speed: 1,
+      pauseMenu: false,
+      win: false,
+      lose: false,
+      placing: null,
+      tool: "select",
+      category: null,
+      selected: null,
+      coasterId: null,
+      thoughts: [],
+      memo: p.memos[0] ?? null,
+      rev: Date.now(),
+    });
+  }
 
   return (
     <main className="min-h-dvh bg-ink px-5 py-8 sm:px-12">
@@ -26,6 +55,7 @@ export function ScenarioSelect() {
       </h1>
       <p className="mt-3 max-w-lg text-sm leading-relaxed text-paper-2">
         Two sites. One lanyard. HQ will assess every disaster against corporate values.
+        {hasSave() ? " The board files one park — accepting a posting shreds the saved one, lab included." : ""}
       </p>
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         {SCENARIOS.map((sc) => (
@@ -57,29 +87,40 @@ export function ScenarioSelect() {
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
-                onClick={() => {
-                  unlockAudio();
-                  sfxClick();
-                  const p = startScenario(sc.id);
-                  pushMemo(p, sc.id === "fernwood" ? "welcome_fernwood" : "welcome_hollow");
-                  set({
-                    screen: "park",
-                    speed: 1,
-                    pauseMenu: false,
-                    win: false,
-                    lose: false,
-                    placing: null,
-                    tool: "select",
-                    memo: p.memos[0] ?? null,
-                  });
-                }}
-                className="mt-5 flex h-12 w-full items-center justify-between rounded-[18px] bg-paper px-5 text-ink transition-transform duration-150 hover:bg-paper-2 active:scale-[0.98]"
-              >
-                <span className="font-medium">Accept posting</span>
-                <ArrowRight className="size-4" />
-              </button>
+              {replaceId === sc.id ? (
+                <div className="mt-5 flex flex-col gap-2">
+                  <p className="text-xs leading-relaxed text-paper-3">
+                    This posting replaces the saved park. Research stays buried with it.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => accept(sc.id)}
+                    className="flex h-12 w-full items-center justify-between rounded-[18px] bg-paper px-5 text-ink transition-transform duration-150 hover:bg-paper-2 active:scale-[0.98]"
+                  >
+                    <span className="font-medium">Replace saved park</span>
+                    <ArrowRight className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sfxClick();
+                      setReplaceId(null);
+                    }}
+                    className="flex h-11 w-full items-center justify-center rounded-[14px] text-sm text-paper-3 hover:text-paper"
+                  >
+                    Keep the saved park
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => accept(sc.id)}
+                  className="mt-5 flex h-12 w-full items-center justify-between rounded-[18px] bg-paper px-5 text-ink transition-transform duration-150 hover:bg-paper-2 active:scale-[0.98]"
+                >
+                  <span className="font-medium">Accept posting</span>
+                  <ArrowRight className="size-4" />
+                </button>
+              )}
             </div>
           </article>
         ))}

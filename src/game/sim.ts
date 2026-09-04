@@ -1,4 +1,4 @@
-import { DAYS_PER_MONTH, DAY_SECONDS, DEF_MAP, defById } from "./catalog";
+import { DAYS_PER_MONTH, DAY_SECONDS, DEF_MAP, defById, isStarterBlueprint } from "./catalog";
 import { guestName, MEMOS, pickThought } from "./names";
 import { queueSlot, sceneryScore, uid, rebuildWalk } from "./park";
 import { astar, nearestWalkable } from "./pathfind";
@@ -1305,8 +1305,11 @@ function dayTick(park: Park) {
   if (park.research) {
     park.research.left -= 1;
     if (park.research.left <= 0) {
-      park.unlocked.push(park.research.defId);
-      const name = defById(park.research.defId).name;
+      const id = park.research.defId;
+      if (!park.unlocked.includes(id) && !isStarterBlueprint(id)) {
+        park.unlocked.push(id);
+      }
+      const name = defById(id).name;
       park.research = null;
       park.memos.push({
         id: uid(park),
@@ -1331,9 +1334,9 @@ export function ridePhase(b: Building): "broken" | "closed" | "running" | "loadi
 export function startResearch(park: Park, defId: string): boolean {
   if (park.research) return false;
   const d = DEF_MAP[defId];
-  if (!d || park.unlocked.includes(defId)) return false;
+  if (!d || isStarterBlueprint(defId) || park.unlocked.includes(defId)) return false;
   const cost = d.researchCost ?? 0;
-  if (park.cash < cost) return false;
+  if (cost <= 0 || park.cash < cost) return false;
   park.cash -= cost;
   park.research = { defId, left: d.researchDays ?? 3 };
   return true;

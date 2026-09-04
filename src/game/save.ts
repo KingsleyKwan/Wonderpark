@@ -1,4 +1,5 @@
 import type { Park } from "./types";
+import { startingUnlocked } from "./catalog";
 import { rebuildWalk } from "./park";
 import { EMPTY_BOOKS, ensureRct } from "./rct";
 
@@ -71,6 +72,10 @@ export function loadPark(): Park | null {
     park.loan = park.loan ?? 0;
     park.books = park.books ?? { ...EMPTY_BOOKS };
     park.lastBooks = park.lastBooks ?? null;
+    park.unlocked = Array.isArray(park.unlocked) && park.unlocked.length > 0
+      ? [...new Set(park.unlocked)]
+      : startingUnlocked();
+    park.research = park.research ?? null;
     ensureRct(park);
     rebuildWalk(park);
     return park;
@@ -90,6 +95,7 @@ export function hasSave() {
 export function clearSave() {
   try {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(KEY + ":bak");
   } catch {
     /* ignore */
   }

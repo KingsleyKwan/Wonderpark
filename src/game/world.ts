@@ -1,6 +1,6 @@
 import type { Camera, Park } from "./types";
 import { createPark } from "./park";
-import { savePark } from "./save";
+import { clearSave, savePark } from "./save";
 
 let park: Park | null = null;
 let camera: Camera = { x: 0, y: 0, zoom: 1 };
@@ -18,14 +18,24 @@ export function setCamera(c: Camera) {
   camera = c;
 }
 
+/** Fresh park. Wipes the single save slot so lab unlocks cannot leak into Continue. */
 export function startScenario(id: string) {
-  park = createPark(id);
+  const next = createPark(id);
+  park = next;
   lastSave = 0;
-  return park;
+  clearSave();
+  savePark(next);
+  lastSave = typeof performance !== "undefined" ? performance.now() : 0;
+  return next;
 }
 
 export function adoptPark(p: Park) {
   park = p;
+}
+
+/** Write this park only if it is still the live one — stale unmounts must not restore an old lab. */
+export function flushPark(p: Park) {
+  if (park === p) savePark(p);
 }
 
 export function maybeAutosave(now: number) {

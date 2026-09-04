@@ -1,4 +1,4 @@
-import { DEF_MAP, DEFS, MAP, PATH_COST, SCENARIOS, defById, startingUnlocked } from "./catalog";
+import { DEF_MAP, DEFS, MAP, PATH_COST, SCENARIOS, defById, isStarterBlueprint, startingUnlocked } from "./catalog";
 import type { Building, Def, Park, StaffJob, Tile, TileKind } from "./types";
 
 const INF = 1e8;
@@ -536,7 +536,11 @@ export function pathCoverage(park: Park): number {
 }
 
 export function researchable(park: Park): Def[] {
+  const have = new Set(park.unlocked);
   return DEFS.filter(
-    (d) => !park.unlocked.includes(d.id) && (d.researchCost ?? 0) > 0,
+    (d) =>
+      (d.researchCost ?? 0) > 0 &&
+      !isStarterBlueprint(d.id) &&
+      !have.has(d.id),
   );
 }

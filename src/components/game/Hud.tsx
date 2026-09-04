@@ -78,7 +78,7 @@ export function Hud() {
     category && category !== "research"
       ? DEFS.filter((d) => {
           const map = { rides: "ride", shops: "shop", scenery: "scenery", staff: "staff" } as const;
-          return d.category === map[category] && park?.unlocked.includes(d.id);
+          return d.category === map[category] && !!park?.unlocked.includes(d.id);
         })
       : [];
 

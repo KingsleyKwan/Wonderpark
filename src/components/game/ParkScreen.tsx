@@ -8,7 +8,7 @@ import { demolishAt, footprintFree, hireStaff, inBounds, placeBuilding, placePat
 import { ParkView3D, centerCamera } from "@/game/scene3d";
 import { tick } from "@/game/sim";
 import { useGameStore } from "@/game/store";
-import { flushSave, getCamera, getPark, maybeAutosave, setCamera } from "@/game/world";
+import { flushPark, flushSave, getCamera, getPark, maybeAutosave, setCamera } from "@/game/world";
 import {
   onVisibility,
   sfxBreak,
@@ -440,7 +440,7 @@ export function ParkScreen() {
       window.removeEventListener("blur", onBlur);
       document.removeEventListener("visibilitychange", onHide);
       view.dispose();
-      flushSave();
+      if (park0) flushPark(park0);
     };
   }, []);
 

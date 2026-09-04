@@ -61,8 +61,6 @@ export const DEFS: Def[] = [
     roof: "#e8dcc4",
     height: 16,
     startUnlocked: true,
-    researchCost: 700,
-    researchDays: 3,
     excitement: 4.1,
     intensity: 3.4,
     nausea: 3.8,
@@ -709,6 +707,9 @@ export const DEFS: Def[] = [
 
 export const DEF_MAP = Object.fromEntries(DEFS.map((d) => [d.id, d])) as Record<string, Def>;
 
+/** Starter blueprints. Copied per park — research must never mutate this list. */
+const START_UNLOCKED_IDS: readonly string[] = DEFS.filter((d) => d.startUnlocked).map((d) => d.id);
+
 export const SCENARIOS: Scenario[] = [
   {
     id: "hollow",
@@ -756,5 +757,9 @@ export function defById(id: string): Def {
 }
 
 export function startingUnlocked(): string[] {
-  return DEFS.filter((d) => d.startUnlocked).map((d) => d.id);
+  return START_UNLOCKED_IDS.slice();
+}
+
+export function isStarterBlueprint(id: string): boolean {
+  return START_UNLOCKED_IDS.includes(id);
 }
